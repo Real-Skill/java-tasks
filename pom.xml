@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.realskill.tasks</groupId>
+    <artifactId>jdbc</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>Java task: JDBC</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <jacoco.version>0.7.5.201505241946</jacoco.version>
+        <jdk.source>1.7</jdk.source>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <h2db.version>1.4.193</h2db.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
+            <version>${jacoco.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.unitils</groupId>
+            <artifactId>unitils-core</artifactId>
+            <version>3.4.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.unitils</groupId>
+            <artifactId>unitils-dbunit</artifactId>
+            <version>3.4.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2db.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>test</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.19.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>realskill</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <version>2.15</version>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>checkstyle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <configLocation>${project.basedir}/checkstyle-configuration.xml</configLocation>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <encoding>UTF-8</encoding>
+                            <consoleOutput>true</consoleOutput>
+                            <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+                            <suppressionsLocation>${project.basedir}/checkstyle-suppressions.xml</suppressionsLocation>
+                            <outputDirectory>${project.build.directory}/checkstyle</outputDirectory>
+                            <outputFile>${project.build.directory}/checkstyle/checkstyle-result.xml</outputFile>
+                            <detail>true</detail>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.3</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>pmd</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/pmd</outputDirectory>
+                            <targetDirectory>${project.build.directory}/pmd</targetDirectory>
+                            <includes></includes>
+                            <targetJdk>${jdk.source}</targetJdk>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.version}</version>
+                        <executions>
+                            <!--
+                            Prepares the property pointing to the JaCoCo runtime agent which
+                            is passed as VM argument when Maven the Surefire plugin is executed.
+                            -->
+                            <execution>
+                                <id>default-prepare-agent-integration</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>prepare-agent-integration</goal>
+                                </goals>
+                                <configuration>
+                                    <destFile>${project.build.directory}/jacoco/jacoco-it.exec</destFile>
+                                </configuration>
+                            </execution>
+                            <!--
+                            Ensures that the code coverage report for unit tests is created after
+                            unit tests have been run.
+                            -->
+                            <execution>
+                                <id>post-unit-test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Sets the path to the file which contains the execution data. -->
+                                    <dataFile>${project.build.directory}/jacoco/jacoco-it.exec</dataFile>
+                                    <!-- Sets the output directory for the code coverage report. -->
+                                    <outputDirectory>${project.build.directory}/jacoco</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.19</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>xml-maven-plugin</artifactId>
+                        <version>1.0</version>
+                        <configuration>
+                            <transformationSets>
+                                <transformationSet>
+                                    <!-- Configures the source directory of XML files. -->
+                                    <dir>${project.build.directory}/findbugs</dir>
+                                    <!-- Configures the directory in which the FindBugs report is written.-->
+                                    <outputDir>${project.build.directory}/findbugs</outputDir>
+                                    <!-- Selects the used stylesheet. -->
+                                    <!-- <stylesheet>fancy-hist.xsl</stylesheet> -->
+                                    <stylesheet>default.xsl</stylesheet>
+                                    <fileMappers>
+                                        <!-- Configures the file extension of the output files. -->
+                                        <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+                                            <targetExtension>.html</targetExtension>
+                                        </fileMapper>
+                                    </fileMappers>
+                                </transformationSet>
+                            </transformationSets>
+                        </configuration>
+                        <executions>
+                            <!-- Ensures that the XSLT transformation is run when the project is compiled. -->
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>transform</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.google.code.findbugs</groupId>
+                                <artifactId>findbugs</artifactId>
+                                <version>3.0.1</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <version>3.0.3</version>
+                        <configuration>
+                            <xmlOutput>true</xmlOutput>
+                            <!-- Optional directory to put findbugs xdoc xml report -->
+                            <xmlOutputDirectory>${project.build.directory}/site</xmlOutputDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+    </profiles>
+</project>

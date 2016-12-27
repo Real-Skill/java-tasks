@@ -1,0 +1,9 @@
+{
+    "protect": [
+        "checkstyle-configuration.xml",
+        "checkstyle-suppressions.xml",
+        "findbugs-exclude.xml",
+        "pom.xml",
+        "src/test/"
+    ]
+}
