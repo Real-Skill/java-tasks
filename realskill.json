@@ -1,0 +1,12 @@
+{
+    "protect": [
+        "target/",
+        "src/test/",
+        "README.md",
+        ".gitignore",
+        "checkstyle-configuration.xml",
+        "checkstyle-suppressions.xml",
+        "findbugs-exclude.xml",
+        "pom.xml"
+    ]
+}
