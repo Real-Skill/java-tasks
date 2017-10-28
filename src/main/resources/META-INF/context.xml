@@ -2,4 +2,7 @@
     <Resource name="jdbc/authority" auth="Container" type="javax.sql.DataSource" driverClassName="org.h2.Driver"
               url="jdbc:h2:mem:mood" username="sa" password="" maxActive="20" maxIdle="10" maxWait="-1"
               description="Datasource to mood database" scope="Shareable"/>
+    <Realm className="org.apache.catalina.realm.DataSourceRealm" localDataSource="true" dataSourceName="jdbc/authority"
+           userTable="users" userNameCol="user_name" userCredCol="user_pass" userRoleTable="user_roles"
+           roleNameCol="role_name"/>
 </Context>
