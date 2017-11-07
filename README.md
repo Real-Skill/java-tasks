@@ -1,78 +1,55 @@
-# Servlet Authentication
+# Servlet JWT Filter
 
 ## Summary
 
-Secure resources using role-based approach.
+Implement WebFilter that authenticates user with JSON Web Tokens.
 
 ## Goal
 
-Introduce authentication using standard form-based authentication and secure app using admin and user roles.
-Users and their roles are stored in H2 SQL database. 
+There are two endpoints in this API:
+
+* GET /me
+* POST /login
+* POST /seed
+
+You have to implement LoginServlet and WebTokenFilter that would authenticate user with JWToken and do something
+using standard mechanisms so that `request.getUserPrincipal()` invoked by `UserServlet` (serving GET /me)
+would result in username of authenticated user.
+
+### GET /me
+Returns JSON representation of currently authenticated user i.e.
+
+    { "username": "Jack", "admin": true }
+    
+Authentication is based on JSON Web Token sent as "Authorization" header i.e.
+
+    Authorization: Bearer abc.def.xyz
+    
+### POST /login
+Accepts form payload with `username` and `password` and checks these credentials are valid against database.
+If credentials are valid it returns JSON Web Token. 
+Token must be created using:
+
+* algorithm taken from servletContext attribute `jwtAlgorithm`
+* issuer: auth0
+* subject: `username`
+
+### POST /seed
+Used by tests to seed database. Make sure your filter does not restrict access to this resource.
+
+ 
 
 ### Table structure
 
 | USERS |
 |-------|
-|user_name: varchar(255)|
-|user_pass: varchar(255)|
-|mood: varchar(5)|
+|username: varchar(255)|
+|password: varchar(255)|
+|admin: boolean|
 
-| USER_ROLES |
-|------------|
-|user_name: varchar(255)|
-|role_name: varchar(255)|
+App ships with pre-configured DataSource `jdbc/authority`.
 
-App ships with pre-configured DataSource `jdbc/authority`. You may use it to configure security realm and lookup
-user profile that should be displayed on mood page.
-
-App consists of 5 pages:
-
-* home
-* mood
-* login
-* login error
-* Access denied error page
-* Resource not found error page
-* Users list page
-
-### Home page `/`
-If user is authenticated it automatically redirects to `/user/:username`, 
-where `nickname` is authenticated user's nickname.
-Otherwise it displays link to login page.
-
-### Mood page `/user/:username`
-
-Shows user mood. Anyone can access this page, but only profile owner should see buttons to change mood.
-There should be button to choose happy mood and a button to choose sad mood.
-
-Users that have not authenticated yet should see link to login page while authenticated users should see link to logout.
-After clicking logout user should be redirected to home page.
- 
-### Login page `/login`
-
-Shows login form with user name input (`name=j_username`), password input (`name=j_password`) 
-and submit button (`type=submit`).
-
-### Login error page
-
-Displayed when user provides invalid credentials.
-Shows `Authentication error` header and `Username, password or role incorrect, try again` message.
-When user clicks `try again` link they should be redirected to `/login` page.
-
-### Access denied error page
-
-Should be displayed when authenticated user tries to access resources he does not have access to. 
-
-### Resource not found error page
-
-Should be displayed when user tries to access profile that does not exist. 
-
-### Users list page `/users`
-
-Shows list of users.
-Only user with admin role is allowed to see this page. 
-
-**You are allowed to modify only existing files inside src/main!**
+**You are allowed to modify only LoginServlet and and WebTokenFilter files inside src/main!**
 
 ## Commands
 
@@ -89,14 +66,6 @@ Default credentials :
 |admin   |admin   |
 |user    |user    |
 
-To run tests with chrome:
-
-    mvn test -Dbrowser=chrome
-    
-To run tests with phantomjs:
-
-    mvn test
-    
-To run tests and static analysis:
+To run tests:
  
-    mvn verify
+    mvn clean test

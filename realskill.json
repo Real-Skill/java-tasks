@@ -1,5 +1,8 @@
 {
   "protect": [
+    "src/main/java/io/realskill/task/java/UserServlet.java",
+    "src/main/resources/META-INF/context.xml",
+    "src/main/webapp/WEB-INF/web.xml",
     "target/",
     "src/test/",
     "README.md",

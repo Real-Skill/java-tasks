@@ -7,29 +7,5 @@
         <property name="deploymentExportPath">target/</property>
     </engine>
 
-    <extension qualifier="webdriver">
-        <property name="browser">${browser:chromeheadless}</property>
-        <property name="remoteAddress">http://${env.PROTRACTOR_HOST:localhost}:4444/wd/hub/</property>
-        <property name="remote">${env.WEBDRIVER_RUNNIG}</property>
-
-        <!--If for any reason you need a different selenium server version uncomment following and tweak-->
-        <!-- mvn test -DseleniumServerVersion=3.33 -->
-        <!--<property name="seleniumServerVersion">${seleniumServerVersion:3.30}</property>-->
-
-        <!--Depending on your browser version you might need different version of driver-->
-        <!--visit https://sites.google.com/a/chromium.org/chromedriver/downloads-->
-        <property name="chromeDriverVersion">${env.chromeDriverVersion:2.30}</property>
-
-        <!--Depending on your browser version you might need different version of driver-->
-        <property name="firefoxDriverVersion">${env.firefoxDriverVersion:v0.15.0}</property>
-
-        <!--It you want to use your local chromedriver uncomment following line-->
-        <!--<property name="chromeDriverBinary">${chromeDriverBinary:/usr/bin/chromedriver}</property>-->
-    </extension>
-
-    <container qualifier="tomcat7" default="true">
-        <configuration>
-            <property name="bindAddress">${env.HOSTNAME:localhost}</property>
-        </configuration>
-    </container>
+    <container qualifier="tomcat7" default="true"/>
 </arquillian>
